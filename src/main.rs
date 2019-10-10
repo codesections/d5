@@ -1,78 +1,71 @@
-use argonautica::Hasher;
-use base64;
-use std::fs;
-use warp::{http::StatusCode, reject::custom as warp_err, reply, Filter};
+use std::{collections::HashMap, env, net, sync::Arc, sync::Mutex};
+use warp::{http::StatusCode as Code, reject::custom as warp_err, reply::with_status, Filter};
 
-//TODO: Add: 1) comments; 2) env vars; 3) save to data dir
-//      Don't add: more than 20 LoC
 fn main() {
+    type IPs = Arc<Mutex<HashMap<String, String>>>;
+    type WarpResult = Result<String, warp::Rejection>;
+
+    let port = env::var("PORT").unwrap_or_default().parse().unwrap_or(3030);
+    let addr = env::var("HOST")
+        .unwrap_or_default()
+        .parse()
+        .unwrap_or_else(|_| net::IpAddr::V4(net::Ipv4Addr::new(127, 0, 0, 1)));
+
+    let db: IPs = Arc::new(Mutex::new(HashMap::new()));
+    let db = warp::any().map(move || db.clone());
+
     let get = warp::get2()
-        .and(warp::header::<HashedAuthHeader>("authorization"))
-        .and_then(|filename: HashedAuthHeader| {
-            fs::read_to_string(&filename.0).map_err(|_| warp_err(Error::NoSavedIp))
+        .and(warp::header::<String>("authorization"))
+        .and(db.clone())
+        .and_then(move |id: String, ip: IPs| -> WarpResult {
+            match ip.lock().map_err(|_| warp_err(Err::Lock))?.get(&id) {
+                Some(v) => Ok(v.to_string()),
+                None => Err(warp::reject::custom(Err::NotFound)),
+            }
         });
 
     let post = warp::post2()
         .and(warp::header::<String>("X-Forwarded-For"))
-        .and(warp::header::<HashedAuthHeader>("authorization"))
-        .and_then(|ip: String, auth: HashedAuthHeader| {
-            fs::write(&auth.0, ip.clone())
-                .map(|_| ip)
-                .map_err(|_| warp_err(Error::WriteErr))
+        .and(warp::header::<String>("authorization"))
+        .and(db.clone())
+        .and_then(move |ip: String, id: String, db: IPs| -> WarpResult {
+            db.lock().map_err(|_| warp_err(Err::Lock))?.insert(id, ip);
+            Ok("IP saved.\n".to_string())
         });
 
     let delete = warp::delete2()
-        .and(warp::header::<HashedAuthHeader>("authorization"))
-        .and_then(|filename: HashedAuthHeader| {
-            fs::remove_file(&filename.0)
-                .map(|_| "IP record deleted.\n")
-                .map_err(|_| warp_err(Error::DeleteErr))
+        .and(warp::header::<String>("authorization"))
+        .and(db)
+        .and_then(move |id: String, db: IPs| -> WarpResult {
+            match db.lock().map_err(|_| warp_err(Err::Lock))?.remove(&id) {
+                Some(_) => Ok("IP deleted".to_string()),
+                None => Err(warp::reject::custom(Err::NotFound)),
+            }
         });
 
-    let handle_err = |err: warp::Rejection| {
-        if let Some(&err) = err.find_cause::<Error>() {
-            eprintln!("{}", err);
-            Ok(reply::with_status(err.to_string(), StatusCode::FORBIDDEN))
-        } else {
-            Err(err)
-        }
+    use crate::Err::{Lock, NotFound};
+    let handle_err = |err: warp::Rejection| match err.find_cause::<Err>() {
+        Some(Lock) => Ok(with_status(Lock.to_string(), Code::INTERNAL_SERVER_ERROR)),
+        Some(NotFound) => Ok(with_status(NotFound.to_string(), Code::NOT_FOUND)),
+        None => Err(err),
     };
 
-    warp::serve(get.or(delete).or(post).recover(handle_err)).run(([127, 0, 0, 1], 3030));
+    eprintln!("DDD running on {}:{}", addr, port);
+    warp::serve(get.or(post).or(delete).recover(handle_err)).run((addr, port));
 }
 
-struct HashedAuthHeader(String);
-impl std::str::FromStr for HashedAuthHeader {
-    type Err = warp::Rejection;
-    fn from_str(auth_header: &str) -> Result<Self, Self::Err> {
-        let without_prefix = auth_header["Basic ".len()..].to_string();
-        Hasher::default()
-            .opt_out_of_secret_key(true)
-            .with_salt("fixed_salt")
-            .with_password(without_prefix)
-            .hash()
-            .map(|h| Self(base64::encode(&h[32..])))
-            .map_err(|_| warp_err(Error::CannotHash))
-    }
+#[derive(Debug)]
+enum Err {
+    Lock,
+    NotFound,
 }
 
-#[derive(Debug, Copy, Clone)]
-enum Error {
-    NoSavedIp,
-    WriteErr,
-    CannotHash,
-    DeleteErr,
-}
-
-impl std::fmt::Display for Error {
+impl std::fmt::Display for Err {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         f.write_str(match self {
-            Self::NoSavedIp => "No saved IP address matches that username/password pair.\n",
-            Self::CannotHash => "Could not hash that username/password pair.\n",
-            Self::WriteErr => "Could not write to the filesystem.\n",
-            Self::DeleteErr => r"Could not delete IP address for that username/password pair.
-Are you sure you used the correct pair?",
+            Self::Lock => "Internal server error.\n",
+            Self::NotFound => "No IP found for that username/password pair.\n",
         })
     }
 }
-impl std::error::Error for Error {}
+impl std::error::Error for Err {}

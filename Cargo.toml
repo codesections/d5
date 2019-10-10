@@ -1,6 +1,6 @@
 [package]
-name = "ip"
-version = "0.1.0"
+name = "ddd"
+version = "0.2.0"
 authors = ["Daniel Sockwell <dsockwell@gmail.com>"]
 edition = "2018"
 
@@ -8,6 +8,6 @@ edition = "2018"
 
 [dependencies]
 warp = "0.1.20"
-bcrypt = "0.6.0"
-argonautica = "0.2.0"
-base64 = "0.10.1"
+
+
+
