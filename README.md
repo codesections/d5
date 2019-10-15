@@ -1,4 +1,4 @@
-# d5 — The DIY Dynamic DNS
+# d5— The DIY Dynamic DNS
 *The simple, Unix-philosophy tool to retrieve the your home network's IP address
 remotely*
 
@@ -144,7 +144,7 @@ d5 aspires to be:
 
 d5 is *not* attempting to:
 * provide information *other than* IP address (useragent, etc.).  Use
-  ifconfig.me instead.
+  [ifconfig.me](https://ifconfig.me/) instead.
 * provide a full (non-DIY) dynamic DNS solution.  Use
   [DDclient](https://sourceforge.net/p/ddclient/wiki/Home/) or
   [duckdns](https://www.duckdns.org/)/a similar service instead.  (Or use d5 + DNS
@@ -179,7 +179,7 @@ personal data—they have to, to provide the service they do.  d5 does not store
 your data in any way and, if you don't trust the version running at
 d5.codesections.com, you can trivially self-host your own copy.
 
-#### Why should I use d5 instead of selfhosting ifconfig.io or something similar?
+#### Why should I use d5 instead of selfhosting [ifconfig.io](https://github.com/georgyo/ifconfig.io) or something similar?
 
 Simplicity.  Tools like ifconfg do both too much and too little.  They do too
 much in that they a large amount of information in addition to IP address; you
@@ -199,14 +199,14 @@ you can convert the example curl commands to your tool of choice at [curl.trillw
 
 #### How secure is d5?
 
-d5 provides decent security, but not excellent.  d3 does not store IP address or
-username–password pairs on disk and thus a compromise of d3 servers cannot leak
-any of that data.  However, because d3 uses [basic
+d5 provides decent security, but not excellent.  d5 does not store IP address or
+username–password pairs on disk and thus a compromise of d5 servers cannot leak
+any of that data.  However, because d5 uses [basic
 authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#Basic_authentication_scheme),
 username–password pairs are transmitted in plaintext (aside from the encryption
-provided by HTTPS).  Thus, anyone who *thoroughly* compromised a d3 server would
+provided by HTTPS).  Thus, anyone who *thoroughly* compromised a d5 server would
 be in a position to intercept IP addresses and username–password pairs.
-Additionally, d3 does not itself implement rate limiting (though it's easy to so
+Additionally, d5 does not itself implement rate limiting (though it's easy to so
 at the reverse proxy level).  This means that, depending on proxy configuration,
 weak username–password pairs could be vulnerable to brute forcing.
 
@@ -217,17 +217,19 @@ a separate database would be the exact opposite of "simple".
 
 #### Ok, but shouldn't d5 at least store IP addresses in a text file?  Keeping them in memory just seems … fragile. 
 
-That was my first thought too (and the initial implementation for d5), but two
-considerations changed my mind.  First, storing the passwords would both require
-hashing them (increasing complexity) and would create the possibility of an
-attacker gaining access to the hashed passwords (decreasing security).
+That was my first thought too (and the [initial
+implementation](https://github.com/codesections/d5/commit/ded0019d67e9a1e2dd5d5c18a06233cae784c56a)
+for d5), but two considerations changed my mind.  First, storing the passwords
+would both require hashing them (increasing complexity) and would create the
+possibility of an attacker gaining access to the hashed passwords (decreasing
+security).
 
 Second, and more importantly, I realized that persisting the IP addresses is
-entirely unnecessary.  The normal reason to persist data to the hard drive is to
-prevent data loss in the case of a program crash or shutdown.  But the entire
-idea behind d5 is that the IP address is constantly subject to change and is
-being updated every few minutes.  So, if d5 crashes, no meaningful data is
-lost—within 5 minutes, all IP addresses will be added back to the system.
+unnecessary.  The normal reason to persist data to the hard drive is to prevent
+data loss in the case of a program crash or shutdown.  But the entire idea
+behind d5 is that the IP address is constantly subject to change and is being
+updated every few minutes.  So, if d5 crashes, no meaningful data is lost—within
+5 minutes, all IP addresses will be added back to the system.
 
 #### Is it really fair to call d5 "DIY Dynamic DNS"?  It doesn't create any DNS entries.
 
