@@ -129,7 +129,7 @@ d5 should be:
   of any reason it should ever exceed 100 lines of code.
 * **lightweight** — consistent with the above, d5 should not use many CPU 
   cycles or much RAM to solve such a simple problem.
-  * **private and reasonably secure** — d5 should never log IP or user information
+* **private and reasonably secure** — d5 should never log IP or user information
   and, to the extent that it does not detract from the first two goals, should
   be as secure as practicable.
   
