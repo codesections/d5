@@ -1,5 +1,5 @@
 # d5— The DIY Dynamic DNS
-*The simple, Unix-philosophy tool to retrieve the your home network's IP address
+*The simple, Unix-philosophy tool to retrieve your home network's IP address
 remotely*
 
 If you want to know the IP address of the computer you're *currently* using,
@@ -34,7 +34,7 @@ runwhen scripts, etc).  The only important point is that it run the `curl -u
 USERNAME:PASSWORD https://d5.codesections.com -X POST` command on a regular
 schedule.
 
-Once you've done that, you can access the most-recently updated IP address with
+Once you've done that, you can access the most recently updated IP address with
 the following curl command:
 
 ```shell
@@ -62,7 +62,7 @@ curl -u USERNAME:PASSWORD https://d5.codesections.com -X DELETE
 If you are happy using the public d5 server at d5.codesections.com, then
 this is all you need to know.  If you would like to self-host d5, then read on.
 
-## Self hosting d5
+## Self-hosting d5
 
 If you prefer not to use the d5.codesections.com server, you can also host d5
 yourself.  (Of course, you will need to host d5 somewhere you can access
@@ -94,7 +94,7 @@ using environmental variables; d5 currently supports the following variables:
    
 By default, d5 is in **multi-user mode**.  In this mode, d5 allows anyone to
 store IP addresses and retrieve them with the associated username–password pair.
-If you provide a `KEY` environmental variable, d5 will run is **single-user
+If you provide a `KEY` environmental variable, d5 will run in **single-user
 mode**, and will *only* allow a single IP address to be stored with the
 username–password pair provided via the `KEY` environmental variable.  When
 setting the `KEY` variable, you must provide the username and password in the
@@ -107,9 +107,8 @@ deployment strategy would be to place d5 behind a reverse proxy, such as
 [Nginx](https://www.nginx.com/) or [Traefik](https://traefik.io/).  If you do
 so, you will need to configure your reverse proxy to forward on the incoming IP
 address using either the `remote_addr` or `x-forwarded-for` header.  (d5 reads
-these headers to learn the relevant IP address).  For example, the following is
-a minimal Nginx configuration block for a server located at
-`d5.codesections.com`:
+these headers to learn the relevant IP address.)  For example, the following is
+a minimal Nginx configuration block for a server located at d5.codesections.com
 
 ```nginx
 server {
@@ -172,7 +171,8 @@ a human-readable URL set dynamically, then it *might* make sense to use
 DDclient.  <sub><sup>(Though I think there's still a Unix-philosophy/ separation of
 concerns case to be made for splitting the two tasks into separate programs and
 using d5 + DNS Lexicon.)</sup><sub>
-p
+
+
 But, many times, you *don't* need a true dynamic DNS with a human-readable
 URL—you just need a way to connect to a computer regardless of its changing IP
 address.  If you don't need that extra functionality, then taking on the code
