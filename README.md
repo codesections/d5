@@ -21,9 +21,9 @@ problem should have a simple solution.  d5 is that simple solution.
 
 ## Example Usage
 
-If you want to use the public d5 server I host, you could run this
-cron job on your home computer (replacing `USER` and `PASSWORD` with your actual
-values, of course):
+If you want to use the public d5 server I host, you could run a cron job to send
+a POST command to d5.  For example, use the following cron job on your home
+computer (replacing `USER` and `PASSWORD` with your actual values, of course):
 
 ```shell
 */5 * * * * curl -u USERNAME:PASSWORD https://d5.codesections.com -X POST
@@ -37,17 +37,27 @@ schedule.
 Once you've done that, you can access the most-recently updated IP address with
 the following curl command:
 
-`curl -u USERNAME:PASSWORD https://d5.codesections.com`
+```shell
+curl -u USERNAME:PASSWORD https://d5.codesections.com`
+```
 
 If you want to automate the process of using d5, it is simple to do so with
 shell scripts/aliases.  For example, I use the following Bash alias:
 
-`alias ssh-home='ssh $(curl $USER https://d5.codesections.com) -p $SSH_PUBLIC_PORT`
+```shell
+alias ssh-home='ssh $(curl $USER https://d5.codesections.com) -p $SSH_PUBLIC_PORT
+```
 
 (Omitting the `:PASSWORD` portion from the alias causes curl to prompt me for
 the password on each use.  If you don't want the security/hassle of being
 prompted for your password, you could store the password as plain text or using
 your preferred credential storage method.)
+
+If you would like to delete a previously stored IP address, you can do so by sending a DELETE command to d5:
+
+```shell
+curl -u USERNAME:PASSWORD https://d5.codesections.com -X DELETE
+```
 
 If you are happy using the public d5 server at d5.codesections.com, then
 this is all you need to know.  If you would like to self-host d5, then read on.
@@ -162,7 +172,7 @@ a human-readable URL set dynamically, then it *might* make sense to use
 DDclient.  <sub><sup>(Though I think there's still a Unix-philosophy/ separation of
 concerns case to be made for splitting the two tasks into separate programs and
 using d5 + DNS Lexicon.)</sup><sub>
-
+p
 But, many times, you *don't* need a true dynamic DNS with a human-readable
 URL—you just need a way to connect to a computer regardless of its changing IP
 address.  If you don't need that extra functionality, then taking on the code
