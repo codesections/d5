@@ -102,7 +102,8 @@ server {
         proxy_pass http://localhost:3030;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
-}```
+}
+```
 
 Depending on your desired security, you will almost certainly want to set up
 https (e.g., with LetsEncrypt) and may additionally want to set rate limits.
