@@ -167,7 +167,7 @@ d5 is *not* attempting to:
 Maybe you shouldn't!  DDclient/similar software does two things: 1) it monitors
 your current IP address and 2) it updates DNS settings to point a human-readable
 URL to the new address.  If you need both of these features—that is, if you want
-a human-readable URL set dynamically, then it *might* make sense to use
+a human-readable URL set dynamically—then it *might* make sense to use
 DDclient.  <sub><sup>(Though I think there's still a Unix-philosophy/ separation of
 concerns case to be made for splitting the two tasks into separate programs and
 using d5 + DNS Lexicon.)</sup><sub>
@@ -182,23 +182,23 @@ code provides a much larger surface area for bugs.
 
 #### Why should I use d5 instead of DuckDNS or a similar service?
 
-Privacy and control.  I have nothing against DuckDNS or any service—DuckDNS's
-[privacy policy](https://www.duckdns.org/pp.jsp) seems pretty decent, as far as
-such things go.  But they have a privacy policy because they *do* collect
-personal data—they have to, to provide the service they do.  d5 does not store
-your data in any way and, if you don't trust the version running at
-d5.codesections.com, you can trivially self-host your own copy.
+Privacy and control.  I have nothing against DuckDNS or any service like
+it—DuckDNS's [privacy policy](https://www.duckdns.org/pp.jsp) seems pretty
+decent, as far as such things go.  But they have a privacy policy because they
+*do* collect personal data—they have to, to provide the service they do.  d5
+does not store your data in any way and, if you don't trust the version running
+at d5.codesections.com, you can easily self-host your own copy.
 
-#### Why should I use d5 instead of selfhosting [ifconfig.io](https://github.com/georgyo/ifconfig.io) or something similar?
+#### Why should I use d5 instead of self-hosting [ifconfig.io](https://github.com/georgyo/ifconfig.io) or something similar?
 
 Simplicity.  Tools like ifconfg do both too much and too little.  They do too
-much in that they a large amount of information in addition to IP address; you
-don't need this information to connect remotely, and collecting it just makes
-the code more complicated.  They do too little in that they tell you about the
-IP address of the *current* computer and don't let you retrieve the IP address
-of a different computer.  This means that, when using ifconfig, you need to
-*first* retrieve the IP address for your computer and *then* find a way to send
-that IP address elsewhere.  This involves multiple round-trips and more
+much in that they provide a large amount of information in addition to IP
+address; you don't need this information to connect remotely, and collecting it
+just makes the code more complicated.  They do too little in that they tell you
+about the IP address of the *current* computer and don't let you retrieve the IP
+address of a different computer.  This means that, when using ifconfig, you need
+to *first* retrieve the IP address for your computer and *then* find a way to
+send that IP address elsewhere.  This involves multiple round-trips and more
 complexity than is justified by the simple task.
 
 #### Can I use d5 without curl?
@@ -213,7 +213,7 @@ d5 provides decent security, but not excellent.  d5 does not store IP address or
 username–password pairs on disk and thus a compromise of d5 servers cannot leak
 any of that data.  However, because d5 uses [basic
 authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#Basic_authentication_scheme),
-username–password pairs are transmitted in plaintext (aside from the encryption
+username–password pairs are transmitted in plain text (aside from the encryption
 provided by HTTPS).  Thus, anyone who *thoroughly* compromised a d5 server would
 be in a position to intercept IP addresses and username–password pairs.
 Additionally, d5 does not itself implement rate limiting (though it's easy to so
@@ -222,7 +222,7 @@ weak username–password pairs could be vulnerable to brute forcing.
 
 #### Shouldn't d5 store IP addresses in a database like Postgres or Redis rather than keeping them in memory?
 
-No.  One of the d5's primary goals is to be as simple as possible and relying on
+No.  One of d5's primary goals is to be as simple as possible and relying on
 a separate database would be the exact opposite of "simple".
 
 #### Ok, but shouldn't d5 at least store IP addresses in a text file?  Keeping them in memory just seems … fragile. 
@@ -245,9 +245,9 @@ updated every few minutes.  So, if d5 crashes, no meaningful data is lost—with
 
 That's a fair point, and what I am attempting to get at by calling it "DIY".  If
 you want to call it "self-hosted remote IP address retrieval", I won't argue
-with you.  But that doesn't roll of the tongue quite as well.
+with you.  But that doesn't roll off the tongue quite as well.
 
-##### Why the name d5?  I notice that "DIY Dynamic DNS" only has three Ds.
+#### Why the name d5?  I notice that "DIY Dynamic DNS" only has three Ds.
 
 Well, mostly because I want to avoid name collision with
 [d3.js](https://d3js.org/), the JavaScript data-visualization library.  But if
