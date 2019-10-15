@@ -2,6 +2,12 @@
 name = "d5"
 version = "0.4.2"
 authors = ["Daniel Sockwell <daniel@codesections.com"]
+description = "The simple, Unix-philosophy tool to retrieve your home network's IP address remotely"
+license = "GPL-3.0-or-later"
+readme = "README.md"
+repository = "https://github.com/codesections/d5"
+categories = ["development-tools"]
+keywords = ["dns", "dynamic dns", "ddns", "IP", "tool"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
